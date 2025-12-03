@@ -4,11 +4,18 @@ with open("data/countries-aggregated.csv", 'r') as raw:
     reader = csv.reader(raw)
     data = list(reader)
 
-with open("cleanedData/countries-aggregated.csv", 'w') as cleaned:
+# import pandas as pd
+# df = pd.DataFrame(data, columns=["date", "country", "cases", "recovered", "deaths"])
+# print(df.describe())
+# print(df['country'].unique())
+
+country = "Singapore"
+
+with open("cleanedData/covid_" + country + ".csv", 'w') as cleaned:
     cleaned.write("Index,Confirmed,Recovered,Deaths\n")
     firstFound = False
     for i in range(1, len(data)):
-        if data[i][1] == "US":
+        if data[i][1] == country:
             if not firstFound:
                 firstIdx = i
                 firstFound = True
