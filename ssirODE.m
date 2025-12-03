@@ -8,8 +8,8 @@ function dxdt = ssirODE(t,x,params)
 pop = 5690000;
 
 beta = params(1);
-gamma = 0.1;          % do not estimate gamma
-delta = params(2);
+gamma = params(2);
+delta = params(3);
 alpha = 1/105; % do not estimate alpha
 
 dxdt = zeros(4,1); %column vector for the state variables
