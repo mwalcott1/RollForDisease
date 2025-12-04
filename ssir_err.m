@@ -6,15 +6,15 @@ function err = ssir_err(tspan,y0,params,data)
 
 % Given specific parameter estimates, generate simulated data 
 pop = 5690000;
-y0(2) = 1;
-y0(1) = pop-y0(2);
+% y0(2) = 1;
+% y0(1) = pop-y0(2);
 [t,y] = ode45(@(t,x) ssirODE(t,x,params),tspan,y0);
 
 %% Specify your objective function to be minimized
 %  Note that you can apply ordinary least squares (OLS) using weights =  ones
 
 % weights = ones(length(data),1);   % OLS
-% weights = 1./data;                % RWLS
+% weights = 1./(mean(data) + 1);            % RWLS, added one in denom to avoid division by zero
 % weights = ones(length(data),1);   % GWLS
 % weights(2) = 0;
 % weights(3) = 0;
@@ -22,4 +22,9 @@ y0(1) = pop-y0(2);
 %err = sum((data-y).^2.*weights);  % objective function
 size(data);
 size(y);
-err = norm(data - y(:, 2:4), 2);
+err = norm(data - y, 2);
+
+% ensure nonnegative params
+if(params(1) < 0 || params(2) < 0 || params(3) < 0 || params(4) < 0)
+    %err = 1e10;
+end
