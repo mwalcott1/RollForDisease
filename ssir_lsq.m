@@ -9,5 +9,5 @@ pop = 5690000;
 % y0(1) = pop-y0(2);
 [t,y] = ode45(@(t,x) ssirODE(t,x,params),tspan,y0);
 
-E = norm(data - y, 2);  % residual vector: exact minus approx, as a vector
+E = data(:, 2) - y(:, 2);  % residual vector: exact minus approx, as a vector
 end

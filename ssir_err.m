@@ -22,9 +22,16 @@ pop = 5690000;
 %err = sum((data-y).^2.*weights);  % objective function
 size(data);
 size(y);
-err = norm(data - y, 2);
+
+y_justID = y(:,[2,4]);
+data_justID = data(:,[2,4]);
+err = norm(y_justID - data_justID);
+
+% err = norm(data - y, 2);
 
 % ensure nonnegative params
+%{
 if(params(1) < 0 || params(2) < 0 || params(3) < 0 || params(4) < 0)
     %err = 1e10;
 end
+%}
