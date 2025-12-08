@@ -16,7 +16,7 @@ pop = 5690000;
 % processed data = [susceptible, inf, rec, dead]
 processed_data = [pop - infected - recovered - deaths, infected, recovered, deaths];
 
-% plot data
+%% plot data
 figure
 hold on
 plot(dates, infected)
@@ -25,7 +25,13 @@ plot(dates, deaths)
 hold off
 legend('infected', 'recovered', 'deaths')
 
-%% Parameter estimation
+%% rescale data
+processed_data = processed_data/pop;
+infected = processed_data(:, 2);
+recovered = processed_data(:, 3);
+deaths = processed_data(:, 4);
+
+%% Set up parameter estimation
 
 % Starting Values for Parameter Estimates
 
@@ -37,9 +43,8 @@ params = zeros(4, 1);
 params(1) = 1.8367; % beta
 params(2) = 1.7; % gamma
 params(3) = 1e-4; % delta
-params(4) = 1/105;
-
-% params(4) = 0.06; % alpha
+params(4) = 1/105; % alpha
+% params(5) = 1e-5; % reporting rate k
 
 %Initial conds (variables go in order: s, i, r, d)
 x0 = zeros(4,1);
@@ -47,18 +52,21 @@ x0(2) = infected(1);
 
 x0(3) = recovered(1); % no recovered yet
 x0(4) = deaths(1); % no deaths yet
-x0(1) = pop - x0(2) - x0(3) - x0(4); % us population
+x0(1) = 1 - x0(2) - x0(3) - x0(4); % us population
 
 %% fminsearch (Nelder-Mead Simplex Method)
+% don't use this for now
+%{
 % options = optimset('Display','iter');
 options = optimset('Display','iter','MaxFunEvals',10000, 'MaxIter',10000);
 best_params = fminsearch(@(p) ssir_err(dates,x0,p,processed_data),params,options);
 best_params
+%}
 
 %% Use lsqnonlin instead
 
 options = optimoptions('lsqnonlin','Display','iter');
-lb = [0,0,0,0];  % lower bound of parameters in the order [betaI, betaW, xi, k]
+lb = [0,0,0,0];  % lower bound of parameters in the order
 %ub = [5,.1, 5, 5];  % upper bound of parameters
 best_params = lsqnonlin(@(p) ssir_lsq(dates,x0,p,processed_data), params,lb,[],options);
 best_params
@@ -69,7 +77,7 @@ best_params
 
 %best_params = [1.8367,1.7152,0.0001,0.0603];
 
-[dates,y] = ode45(@(t,x)ssirODE(t,x,best_params),dates,x0);
+[dates,y] = ode23s(@(t,x) ssirODErescaled(t,x,best_params), dates, x0);
 
 % Plot the model results alongside the actual data
 figure
@@ -92,3 +100,26 @@ for i = 1:130
     end
 end
 %}
+
+%% Plot error landscape
+
+% estimated parameters from literature
+gamma = 0.1;
+alpha = 1/105;
+
+% set up parameter values 
+beta_vec = linspace(0, 5, 500);
+delta_vec = linspace(0, 1, 100);
+errorLandscape = zeros(length(beta_vec), length(delta_vec));
+
+for beta = beta_vec
+    i = 1;
+    for delta = delta_vec
+        j = 1;
+        params_plt = [beta, gamma, delta, alpha];
+        err = ssir_err(dates, x0, params_plt, processed_data);
+        errorLandscape(i, j) = err; 
+        j = j + 1; 
+    end
+    i = i + 1;
+end

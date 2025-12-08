@@ -6,6 +6,8 @@ function err = ssir_err(tspan,y0,params,data)
 
 % Given specific parameter estimates, generate simulated data 
 pop = 5690000;
+y0(2) = data(1)*params(5);   % reporting rate "k" affects initial condition
+y0(1) = 1-y0(2);
 % y0(2) = 1;
 % y0(1) = pop-y0(2);
 [t,y] = ode45(@(t,x) ssirODE(t,x,params),tspan,y0);
