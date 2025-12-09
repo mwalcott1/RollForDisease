@@ -15,8 +15,8 @@ alpha = params(4);
 % alpha = 1/105; % do not estimate alpha
 
 dxdt = zeros(4,1); %column vector for the state variables
-dxdt(1) = -beta*x(1)*x(2)/xi + alpha*x(3);
-dxdt(2) = beta*x(1)*x(2)/xi - gamma*x(2)/xi - delta*x(2);
-dxdt(3) = gamma*x(2)/xi - alpha*x(3);
+dxdt(1) = -beta*x(1)*x(2) + alpha*x(3);
+dxdt(2) = beta*x(1)*x(2) - gamma*x(2) - delta*x(2);
+dxdt(3) = gamma*x(2) - alpha*x(3);
 dxdt(4) = delta*x(2);
 end

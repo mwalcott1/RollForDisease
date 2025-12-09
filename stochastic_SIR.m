@@ -40,11 +40,11 @@ deaths = processed_data(:, 4);
 params = zeros(4, 1);
 
 
-params(1) = 1.8367; % beta
+params(1) = 1.8; % beta
 params(2) = 1.7; % gamma
 params(3) = 1e-4; % delta
 params(4) = 1/105; % alpha
-% params(5) = 1e-5; % reporting rate k
+params(5) = 1e-2; % reporting rate k
 
 %Initial conds (variables go in order: s, i, r, d)
 x0 = zeros(4,1);
@@ -66,8 +66,8 @@ best_params
 %% Use lsqnonlin instead
 
 options = optimoptions('lsqnonlin','Display','iter');
-lb = [0,0,0,0];  % lower bound of parameters in the order
-%ub = [5,.1, 5, 5];  % upper bound of parameters
+lb = [0,0,0,0,0];  % lower bound of parameters in the order
+% ub = [,.5,.8,1,.5];  % upper bound of parameters
 best_params = lsqnonlin(@(p) ssir_lsq(dates,x0,p,processed_data), params,lb,[],options);
 best_params
 
@@ -77,7 +77,7 @@ best_params
 
 %best_params = [1.8367,1.7152,0.0001,0.0603];
 
-[dates,y] = ode23s(@(t,x) ssirODErescaled(t,x,best_params), dates, x0);
+[dates,y] = ode45(@(t,x) ssirODErescaled(t,x,best_params), dates, x0);
 
 % Plot the model results alongside the actual data
 figure
@@ -86,8 +86,8 @@ plot(dates, infected)
 plot(dates, recovered)
 plot(dates, deaths)
 %plot(dates, y(:, 1),'--') % Susceptible
-plot(dates, y(:, 2), '--') % Infected
-% plot(dates, y(:, 3), '--') % Recovered
+plot(dates, y(:, 2)/(best_params(5)), '--') % Infected
+plot(dates, y(:, 3), '--') % Recovered
 plot(dates, y(:, 4), '--') % Deaths
 hold off
 legend('infected', 'recovered', 'deaths', 'model infected', 'model recovered', 'model deaths');
@@ -101,25 +101,39 @@ for i = 1:130
 end
 %}
 
-%% Plot error landscape
+%% Calculate error landscape
 
 % estimated parameters from literature
 gamma = 0.1;
 alpha = 1/105;
 
 % set up parameter values 
-beta_vec = linspace(0, 5, 500);
-delta_vec = linspace(0, 1, 100);
+beta_vec = linspace(0.11, 0.15, 500);
+delta_vec = linspace(0, 1e-3, 100);
 errorLandscape = zeros(length(beta_vec), length(delta_vec));
 
+i = 1;
 for beta = beta_vec
-    i = 1;
+    j = 1;
     for delta = delta_vec
-        j = 1;
         params_plt = [beta, gamma, delta, alpha];
-        err = ssir_err(dates, x0, params_plt, processed_data);
+        err = norm(ssir_lsq(dates, x0, params_plt, processed_data));
         errorLandscape(i, j) = err; 
-        j = j + 1; 
+        j = j + 1;
     end
     i = i + 1;
 end
+
+%% Plot error landscape
+
+% Create a surface plot for the error landscape
+figure;
+imagesc(beta_vec, delta_vec, errorLandscape')   % X and Y axis mapped to vectors
+set(gca,'YDir','normal')                         % imagesc defaults to inverted y
+colormap(parula)                                % or hot, jet, viridis, etc.
+colorbar
+xlabel('Beta');
+ylabel('Delta');
+zlabel('Error');
+title('Error Landscape for Parameter Estimation');
+colorbar;
