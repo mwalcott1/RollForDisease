@@ -50,16 +50,13 @@ function [t,y] = gillespie_SIRD_2(tspan, y0, params, USE_GAMMA_PRIOR, SHAPE, SCA
         if infection
             ycur(1) = ycur(1) - 1;
             ycur(2) = ycur(2) + 1;
-        end
-        if death
+        elseif death
             ycur(2) = ycur(2) - 1;
             ycur(4) = ycur(4) + 1;
-        end
-        if immuneLoss
+        elseif immuneLoss
             ycur(3) = ycur(3) - 1;
             ycur(1) = ycur(1) + 1;
-        end
-        if recovery
+        elseif recovery
             ycur(2) = ycur(2) - 1;
             ycur(3) = ycur(3) + 1;
         end

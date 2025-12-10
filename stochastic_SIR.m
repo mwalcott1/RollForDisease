@@ -68,6 +68,7 @@ best_params
 % to be able to compare the data with the solution
 
 %best_params = [1.8367,1.7152,0.0001,0.0603];
+best_params = [1.4647,1.3548,0,0.0266];
 
 [dates,y] = ode45(@(t,x)ssirODE(t,x,best_params),dates,x0);
 
@@ -77,9 +78,9 @@ hold on
 plot(dates, infected)
 plot(dates, recovered)
 plot(dates, deaths)
-%plot(dates, y(:, 1),'--') % Susceptible
+plot(dates, y(:, 1),'--') % Susceptible
 plot(dates, y(:, 2), '--') % Infected
-% plot(dates, y(:, 3), '--') % Recovered
+%plot(dates, y(:, 3), '--') % Recovered
 plot(dates, y(:, 4), '--') % Deaths
 hold off
 legend('infected', 'recovered', 'deaths', 'model infected', 'model recovered', 'model deaths');

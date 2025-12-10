@@ -1,15 +1,15 @@
-N_TOTAL=3000; 
-INITIAL_INFECTED=500; 
-N_TRIALS=25; 
+N_TOTAL=56900; 
+INITIAL_INFECTED=683; 
+N_TRIALS=10; 
 T_FINAL=100; 
-ALPHA=0.25;
-BETA=0.5;
-GAMMA=0.1;
-DELTA=0.005;
+ALPHA=0.0266;
+BETA=1.4647;
+GAMMA=1.3548;
+DELTA=2.5086e-5;
 
 USE_GAMMA_PRIOR = true;
-SHAPE = 1;
-SCALE = 1;
+SHAPE = 1.09;
+SCALE = 1.6;
 
 figure
 hold on
@@ -30,7 +30,7 @@ for n = 1:N_TRIALS
     end
 
     tspan = [0, T_FINAL];
-    y0 = [N_TOTAL - INITIAL_INFECTED; INITIAL_INFECTED; 0; 0];
+    y0 = [N_TOTAL - INITIAL_INFECTED; INITIAL_INFECTED; 240; 3];
 
     [t,y] = gillespie_SIRD_2(tspan, y0, params, USE_GAMMA_PRIOR, SHAPE, SCALE);
 
@@ -40,9 +40,13 @@ for n = 1:N_TRIALS
 
 
     p1 = plot(t,y(:,1),"Color","r");
+    p1.Color(4) = 0.25;
     p2 = plot(t,y(:,2),"Color","g");
+    p2.Color(4) = 0.25;
     p3 = plot(t,y(:,3),"Color","b");
+    p3.Color(4) = 0.25;
     p4 = plot(t,y(:,4),"Color","k");
+    p4.Color(4) = 0.25;
 
     if (n == 1)
         p = [p1, p2, p3, p4];
@@ -56,7 +60,7 @@ legend(p,{"S","I","R","D"})
 title("Stochastic SIRD Population Over Time")
 hold off
 
-% ============================================================
+%% ============================================================
 % Export to CSV for R
 for k = 1:num_capture_times
     fname = sprintf("infected_t%d.csv", capture_times(k));

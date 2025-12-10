@@ -7,7 +7,7 @@ BETA=0.5;
 GAMMA=0.1;
 DELTA=0.005;
 
-USE_GAMMA_PRIOR=true; %Set to true to resample beta for each simulation
+USE_GAMMA_PRIOR=false; %Set to true to resample beta for each simulation
 SHAPE=1;
 SCALE=1;
 

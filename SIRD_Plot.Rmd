@@ -48,9 +48,9 @@ legend("topright",
 library(tidyverse)
 
 
-inf10  <- read.csv("C:/Users/rober/Downloads/infected_t10.csv", header=FALSE)%>% mutate(time="10")
-inf50  <- read.csv("C:/Users/rober/Downloads/infected_t50.csv", header=FALSE) %>% mutate(time="50")
-inf100 <- read.csv("C:/Users/rober/Downloads/infected_t100.csv", header=FALSE)%>% mutate(time="100")
+inf10  <- read.csv("infected_t10.csv", header=FALSE)%>% mutate(time="10")
+inf50  <- read.csv("infected_t50.csv", header=FALSE) %>% mutate(time="50")
+inf100 <- read.csv("infected_t100.csv", header=FALSE)%>% mutate(time="100")
 
 
 colnames(inf10)[1]  <- "infected"
@@ -80,9 +80,9 @@ ggplot(df, aes(x = infected, color = time, fill = time)) +
 
 
 
-inf10  <- read.csv("C:/Users/rober/Downloads/infected_t10.csv", header=FALSE)%>% mutate(time="10")
-inf50  <- read.csv("C:/Users/rober/Downloads/infected_t50.csv", header=FALSE) %>% mutate(time="50")
-inf100 <- read.csv("C:/Users/rober/Downloads/infected_t100.csv", header=FALSE)%>% mutate(time="100")
+inf10  <- read.csv("infected_t10.csv", header=FALSE)%>% mutate(time="10")
+inf50  <- read.csv("infected_t50.csv", header=FALSE) %>% mutate(time="50")
+inf100 <- read.csv("infected_t100.csv", header=FALSE)%>% mutate(time="100")
 
 
 colnames(inf10)[1]  <- "infected"
