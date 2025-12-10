@@ -13,7 +13,10 @@ function [t,y] = gillespie_SIRD(tspan,y0,params)
             y(i,:)=ycur;
             break;
         end
+        
 
+        % todo: implement bayes functionality here, where the beta param
+        % is instead sampled from Gamma(r,s)
        infRate=params.beta*ycur(1)*ycur(2)/params.N;
        deathRate=params.delta*ycur(2);
        immunityLossRate=params.alpha*ycur(3);
