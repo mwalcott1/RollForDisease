@@ -16,10 +16,10 @@ params = struct("alpha",ALPHA,"beta",BETA,"gamma",GAMMA,"delta",DELTA,"N",N_TOTA
 capture_times = [1.6, 5, 10];
 num_capture_times = length(capture_times);
 
-infected_capture = zeros(N_TRIALS, num_capture_times);
+infected_capture = zeros(N_TRIALS, num_capture_times*2);
 
 tspan = [0, T_FINAL];
-y0 = [N_TOTAL - INITIAL_INFECTED; INITIAL_INFECTED; 240; 3];
+y0 = [N_TOTAL - INITIAL_INFECTED; INITIAL_INFECTED; 0; 0];
 
 
 
@@ -40,9 +40,12 @@ for j = 1:2
         [t,y] = gillespie_SIRD_2(tspan, y0, params, USE_GAMMA_PRIOR, SHAPE, SCALE);
     
         for k = 1:num_capture_times
-            infected_capture(n, k) = interp1(t, y(:,2), capture_times(k));
-        end
-        
+            if (j == 2)
+                infected_capture(n, k+num_capture_times) = interp1(t, y(:,2), capture_times(k));
+            else
+                infected_capture(n, k) = interp1(t, y(:,2), capture_times(k));
+            end
+        end        
         if (j == 2)
             p5 = plot(t,y(:,2),"Color","r");
             p5.Color(4) = 0.1;
@@ -71,25 +74,29 @@ ylabel("Population")
 xlabel("Time")
 %legend(p,{"S","I","R","D"})
 title("ODE vs. Plain Stochastic vs. Bayesian Approach")
-xlim([0,20])
-ylim([0,3000])
 
 % ODE model for comparison
 
 best_params = [BETA, GAMMA, DELTA, ALPHA];
 dates = linspace(0,50,100).';
-[dates,y2] = ode45(@(t,x)ssirODE(t,x,best_params),dates,y0);
+[dates,y2] = ordinary_SIRD(t,y0,params);
+%[dates,y2] = ode45(@(t,x)ssirODE(t,x,best_params),dates,y0);
 
 %plot(dates, y2(:, 1),'--') % Susceptible
 p6 = plot(dates, y2(:, 2),'b-',"LineWidth",1.5); % Infected
 %plot(dates, y2(:, 3), '--',LineWidth=1.5) % Recovered
 %plot(dates, y2(:, 4), '--') % Deaths
-legend([p, p6],{"ODE","Plain","Bayes"})
+legend([p, p6],{"Plain","Bayes","ODE"})
+xlim([0,20])
+ylim([0,2000])
+xline(1.6,'k--',"LineWidth",1.5)
+xline(5,'k--',"LineWidth",1.5)
+xline(10,'k--',"LineWidth",1.5)
 hold off
 
 %% ============================================================
 % Export to CSV for R
-for k = 1:num_capture_times
+for k = 1:num_capture_times*2
     fname = sprintf("infected_t%d.csv", capture_times(k));
     writematrix(infected_capture(:, k), fname);
 end
@@ -97,3 +104,11 @@ end
 disp("CSV export complete: infected_t10.csv, infected_t50.csv, infected_t100.csv");
 % ============================================================
 
+%% auwa.
+
+writematrix(infected_capture(:, 1), "infected_1_plain.csv")
+writematrix(infected_capture(:, 2), "infected_5_plain.csv")
+writematrix(infected_capture(:, 3), "infected_10_plain.csv")
+writematrix(infected_capture(:, 4), "infected_1_bayes.csv")
+writematrix(infected_capture(:, 5), "infected_5_bayes.csv")
+writematrix(infected_capture(:, 6), "infected_10_bayes.csv")

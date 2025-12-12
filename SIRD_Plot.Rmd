@@ -44,13 +44,14 @@ legend("topright",
        lwd=2)
 
 ```
+
 ```{r}
 library(tidyverse)
 
 
-inf10  <- read.csv("infected_t10.csv", header=FALSE)%>% mutate(time="10")
-inf50  <- read.csv("infected_t50.csv", header=FALSE) %>% mutate(time="50")
-inf100 <- read.csv("infected_t100.csv", header=FALSE)%>% mutate(time="100")
+inf10  <- read.csv("infected_1_plain.csv", header=FALSE)%>% mutate(time="1.6")
+inf50  <- read.csv("infected_5_plain.csv", header=FALSE) %>% mutate(time="5")
+inf100 <- read.csv("infected_10_plain.csv", header=FALSE)%>% mutate(time="10")
 
 
 colnames(inf10)[1]  <- "infected"
@@ -63,11 +64,11 @@ df <- bind_rows(inf10, inf50, inf100)
 # Plot
 ggplot(df, aes(x = infected, color = time, fill = time)) +
   geom_density(alpha = 0.35, linewidth = 1.2) +
-  scale_color_manual(values = c("10"="blue", "50"="red", "100"="darkgreen")) +
-  scale_fill_manual(values = c("10"="blue", "50"="red", "100"="darkgreen")) +
+  scale_color_manual(values = c("1.6"="blue", "5"="red", "10"="darkgreen")) +
+  scale_fill_manual(values = c("1.6"="blue", "5"="red", "10"="darkgreen")) +
   theme_minimal(base_size = 14) +
   labs(
-    title = "Density of Infected Population at t = 10, 50, and 100",
+    title = "Density of Infected Population at t = 1.6, 5, and 10",
     x = "Infected",
     y = "Density",
     color = "Time",
@@ -113,3 +114,28 @@ ggplot(df, aes(x = infected, fill = time, color = time)) +
 
 ```
 
+```{r}
+inf1b  <- read.csv("infected_1_bayes.csv", header=FALSE)%>% mutate(time="1.6") %>% mutate(type="bayes")
+inf1p  <- read.csv("infected_1_plain.csv", header=FALSE) %>% mutate(time="1.6") %>% mutate(type="plain")
+
+
+colnames(inf1b)[1]  <- "infected"
+colnames(inf1p)[1]  <- "infected"
+
+# Combine
+df <- bind_rows(inf1b, inf1p)
+
+# Plot
+ggplot(df, aes(x = infected, color = type, fill = type)) +
+  geom_density(alpha = 0.35, linewidth = 1.2) +
+  scale_color_manual(values = c("bayes"="orange", "plain"="blue")) +
+  scale_fill_manual(values = c("bayes"="orange", "plain"="blue")) +
+  theme_minimal(base_size = 14) +
+  labs(
+    title = "Comparing Density of Infected Population at t = 1.6",
+    x = "Infected",
+    y = "Density",
+    color = "Time",
+    fill = "Time"
+  )
+```
